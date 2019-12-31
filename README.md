@@ -34,6 +34,8 @@ This is the simplest implementation. Basically you make a 'table' that has state
 
 Regularly reaches >8 in 20,000 iterations. I haven't really tested the hyperparameters much, but the same implementation is used to solve it in 1,000 iterations, so feel free to play with those. There is an exmaple reward graph in the folder. I didn't include a saved version because "training" from scratch takes like 2 minutes. 
 
+SARSA or State-action-reward-state-action, is very similar to Q learning except that it is on policy. What does that mean? That means that in the updating of SARSA the next action is chosen as it would be if it were real (i.e. however you chose your actions, in my case epsilon greedy, apply that to your choosing). Q Learning just takes the max valued action (even if it wouldn't actually take that in a real simulation). There is SARSA code (it is almost identical) and it performs comparably on this task. 
+
 ## DQN:
 
 DQN stands for Deep Q Network and it is very similar to Q learning, however, it uses a neural network. It is easy to see where Q learning fails. If you have a large number of states, although Q learning will converge, it may take an extraordinary amount of time. Where the Q-Table told use the value of actions at a given state, now our neural network will tell us this. There are convergence problems in this (which need not converge like the Q-Table), but that is where other factors will come in.
