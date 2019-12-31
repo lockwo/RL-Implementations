@@ -12,7 +12,7 @@ Each algorithm will have its own folder that will be created when my implementat
 
 Below is a list of algorithms I intended to make (the checked ones have already been implemented).
 
-- [ ] Q-Table/SARSA
+- [X] Q-Table/SARSA
 - [ ] DQN
 - [ ] Double DQN
 - [ ] Dueling DQN
@@ -25,3 +25,9 @@ Below is a list of algorithms I intended to make (the checked ones have already 
 - [ ] Soft Actor Critic (SAC)
 - [ ] AlphaZero (see https://github.com/lockwo/Learning_and_Advanced_Game_AI/tree/master/final)
 - [ ] MARL? (I know very little about this, but I am very interested in learning, but it will probably be later)
+
+# Notes for each implementation
+
+## Q-Table:
+
+Regularly reaches >8 in 20,000 iterations. I haven't really tested the hyperparameters much, but the same implementation is used to solve it in 1,000 iterations, so feel free to play with those. There is an exmaple reward graph in the folder. I didn't include a saved version because "training" from scratch takes like 2 minutes.
