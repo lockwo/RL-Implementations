@@ -56,7 +56,7 @@ class DQN_AGENT(object):
 
 # Hyperparameters
 ITERATIONS = 20000
-batch_size = 10
+batch_size = 32
 windows = 100
 
 # This is the standard stuff for Open AI Gym. Be sure to check out their docs if you need more help.
