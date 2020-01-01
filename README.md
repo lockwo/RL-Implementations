@@ -13,7 +13,7 @@ Each algorithm will have its own folder that will be created when my implementat
 Below is a list of algorithms I intended to make (the checked ones have already been implemented).
 
 - [X] Q-Table/SARSA
-- [ ] DQN
+- [X] DQN
 - [ ] Double DQN
 - [ ] Dueling DQN
 - [ ] Full DQN (Double Dueling DQN with Prioritized Experience Replay)
@@ -39,3 +39,5 @@ SARSA or State-action-reward-state-action, is very similar to Q learning except 
 ## DQN:
 
 DQN stands for Deep Q Network and it is very similar to Q learning, however, it uses a neural network. It is easy to see where Q learning fails. If you have a large number of states, although Q learning will converge, it may take an extraordinary amount of time. Where the Q-Table told use the value of actions at a given state, now our neural network will tell us this. There are convergence problems in this (which need not converge like the Q-Table), but that is where other factors will come in.
+
+The DQN is a vanilla dense dqn, without hyperparameter optimization. It works for cartpole and acrobot, and the same approach could work for RAM versions of atari games, but for the atari games (in order to get as close to human interaction as possible), I will be using the methods linked in the papers to play atari games (aka CNN rather than dense network).
