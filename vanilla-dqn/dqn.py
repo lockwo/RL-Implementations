@@ -81,8 +81,8 @@ for i in range(ITERATIONS):
         s2, reward, done, info = env.step(action)
         total_reward += reward
         agent.remember(s1, action, reward, s2, done)
-        #if len(agent.memory) > batch_size:
-        #    agent.train()
+        if len(agent.memory) > batch_size:
+            agent.train()
         if done:
             rewards.append(total_reward)
             rs.append(total_reward)
