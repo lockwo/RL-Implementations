@@ -18,8 +18,7 @@ Below is a list of algorithms I intended to make (the checked ones have already 
 - [ ] Dueling DQN
 - [ ] Full DQN (Double Dueling DQN with Prioritized Experience Replay)
 - [ ] Deep Deterministic Policy Gradient (DDPG)
-- [ ] Proximal Policy Optimization (PPO)
-- [ ] Trust Region Policy Optimization (TRPO)
+- [ ] Proximal Policy Optimization (PPO) / Trust Region Policy Optimization (TRPO)
 - [ ] Asynchronous Advantage Actor Critic (A3C)
 - [ ] Twin Delayed Deep Deterministic Policy Gradients (TD3)
 - [ ] Soft Actor Critic (SAC)
