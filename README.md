@@ -23,6 +23,7 @@ Below is a list of algorithms I intended to make (the checked ones have already 
 - [ ] Proximal Policy Optimization (PPO) / Trust Region Policy Optimization (TRPO)
 - [ ] Asynchronous Advantage Actor Critic (A3C)
 - [ ] Soft Actor Critic (SAC)
+- [ ] World Models
 - [X] AlphaZero (see https://github.com/lockwo/Learning_and_Advanced_Game_AI/tree/master/final) Not exact, but I will improve later
 - [ ] MARL? (I know very little about this, but I am very interested in learning, but it will probably be later)
 
