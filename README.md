@@ -6,7 +6,7 @@ This repository is meant to be an educational resource, both for those that visi
 
 # Repo organization
 
-Each algorithm will have its own folder that will be created when my implementation is created. The environments folder contains any environments that I have made from scratch. 
+Each algorithm will have its own folder that will be created when my implementation is created. The environments folder contains any environments that I have made from scratch. I will only upload easily trainable models or contemporary models. Due to my neophytic parallel programming skills, the way in which I would train things like DQN involve running many simultaneous game generation programs, storing that information, then training, alternating these batches in 6 hours shifts (that is the maximum job time). This requires code modification and aditional work, hence why I do not do it for all. I do run all programs and train them briefly, to verify they are (mostly) correct, but the likely ones to have trained models are full dqn, ddpg, ppo, and sac (maybe).
 
 # Implementations
 
