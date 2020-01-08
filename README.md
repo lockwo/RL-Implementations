@@ -46,7 +46,7 @@ The DQN is a vanilla dense dqn, without hyperparameter optimization. It works fo
 
 One of the strengths (in terms of computational efficiency) is DQN's ability to learn from the past. Because the network basically maps (s,a) pairs to associated values, any experience is good because (even if it is bad gameplay) it can learn from it. 
 
-Due to the training time of this (and likely future versions) I don't provide a trained bot. I hopefully will, once I figure out how to use my computational resources. However, until then, I will only upload trained bots for current techniques (i.e. things that are still frequently used, like PPO). Considering that in the paper they had to train for >40 hours which is not something I have (especially since they have more parallel computing knowledge, but I will certianly work on it).
+Due to the training time of this (and likely future versions) I don't provide a trained bot. I hopefully will, once I figure out how to use my computational resources. However, until then, I will only upload trained bots for current techniques (i.e. things that are still frequently used, like PPO). Considering that in the paper they had to train for >40 hours which is not something I have (especially since they have more parallel computing knowledge, but I will certianly work on it). However, I did just fix a bug that might enable me to train it much faster.
 
 ## Double DQN:
 
