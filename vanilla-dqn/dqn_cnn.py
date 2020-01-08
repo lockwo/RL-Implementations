@@ -6,9 +6,10 @@ import math
 from collections import deque
 import tensorflow as tf
 import PIL as pil
+import time
 
 # It's a pain, because I only have access to tf 1.15 on a fast computer but I wrote this originally for tf 2.0 and this is a hacky fix
-sess = tf.InteractiveSession()
+#sess = tf.InteractiveSession()
 
 class DQN_AGENT(object):
     def __init__(self, action_size, batch_size):
@@ -32,7 +33,7 @@ class DQN_AGENT(object):
         x = tf.keras.layers.Dense(512, activation='relu', name='dense1')(x)
         x = tf.keras.layers.Dense(self.action_space, name='output')(x)
         model = tf.keras.models.Model(inputs=inputs, outputs=x)
-        model.compile(optimizer=tf.keras.optimizers.Adam(), loss=tf.keras.losses.Huber(), metrics=['mse', 'mse'])
+        model.compile(optimizer=tf.keras.optimizers.Adam(), loss=tf.keras.losses.Huber(), metrics=['mae'])
         return model
 
     def remember(self, state, action, reward, next_state, done):
@@ -42,24 +43,22 @@ class DQN_AGENT(object):
         if random.random() < self.epsilon: 
             return np.random.choice(self.action_space)
         else:
-            obs = tf.concat([obs[0], obs[1], obs[2], obs[3]], axis=2)
-            obs = obs.eval()
-            obs = obs / 255
+            obs = np.concatenate([obs[0], obs[1], obs[2], obs[3]], axis=2)
+            obs = obs / 255.
             return np.argmax(self.q_network.predict(np.array([obs,]))[0])
 
     def train(self):
         minibatch = random.sample(self.memory, self.batch)
         states, targets = [], []
         for state, action, reward, next_state, done in minibatch:
-            state = tf.concat((state[0], state[1], state[2], state[3]), axis=2)
-            state = state.eval()
+            state = np.concatenate((state[0], state[1], state[2], state[3]), axis=2)
             state = state / 255.
             states.append(state)
             state = np.array([state,])
-            next_state = tf.concat((next_state[0], next_state[1], next_state[2], next_state[3]), axis=2)
-            next_state = next_state.eval()
+            next_state = np.concatenate((next_state[0], next_state[1], next_state[2], next_state[3]), axis=2)
             next_state = next_state / 255.
             next_state = np.array([next_state,])
+            self.q_network.predict(state)
             target_f = self.q_network.predict(state)[0]
             if done:
                 target_f[action] = reward
@@ -69,36 +68,39 @@ class DQN_AGENT(object):
             targets.append(targets)
             target_f = np.array([target_f,])
             self.q_network.fit(state, target_f, epochs=1, verbose=0)
-        #self.q_network.fit(np.array(states), np.array(targets), epochs=1, verbose=0) # Batch training
+        #self.q_network.fit(np.array(states), np.array(targets), batch_size=self.batch, epochs=1, verbose=1) # Batch training
         
         if self.epsilon > self.epsilon_min:
             self.epsilon *= self.epsilon_decay
 
-def preprocess(prev_frame, encode_frame):
-    prev_frame = np.asarray(prev_frame)
+def preprocess(encode_frame):
+    '''
+    # This code is here, because I am bad at using tensorflow
     encode_frame = np.asarray(encode_frame)
-    #for i in range(len(prev_frame)):
-    #    for j in range(len(prev_frame[i])):
-    #        for k in range(len(prev_frame[i][j])):
-    #            encode_frame[i][j] = np.maximum(prev_frame[i][j], encode_frame[i][j])
     encode_frame = tf.image.rgb_to_grayscale(encode_frame)
     encode_frame = tf.image.crop_to_bounding_box(encode_frame, 34, 0, 160, 160)
     encode_frame = tf.image.resize(encode_frame, [84,84], method=tf.image.ResizeMethod.NEAREST_NEIGHBOR)
     return encode_frame
-    '''
+    
     with tf.compat.v1.Session() as ses:
         a = tf.constant(encode_frame)
         encode_frame = ses.run(a)
     encode_frame = np.reshape(encode_frame, (84,84))
     img = pil.Image.fromarray(encode_frame, 'L')
-    img.save('f8.png')
     '''
+    img = pil.Image.fromarray(encode_frame, 'RGB').convert('L').resize((84,110))
+    img = img.crop((0, 18, 84, 102))
+    img = np.asarray(img.getdata(), dtype=np.uint8).reshape(img.size[0], img.size[1], 1)
+    return img
+    #print(img.shape)
+    #img.save('f2.png')
+    
 
 # Hyperparameters
 ITERATIONS = 20000
 batch_size = 32
 windows = 100
-learn_delay = 100
+learn_delay = 50000
 
 # This is the standard stuff for Open AI Gym. Be sure to check out their docs if you need more help.
 env = gym.make("Pong-v0").env
@@ -114,15 +116,14 @@ best_avg_reward = -math.inf
 rs = deque(maxlen=windows)
 frames = 0
 for i in range(ITERATIONS):
-    s1 = env.reset()
-    s1, _, _, _ = env.step(env.action_space.sample())
-    s2 = preprocess(s1, s1)
+    env.reset()
+    s1, reward, done, info = env.step(env.action_space.sample())
+    s2 = preprocess(s1)
     states = [s2, s2, s2, s2]
     total_reward = 0
-    done = False
     j = 0
     while not done:
-        #env.render()
+        env.render()
         if j % 4 == 0:
             if len(agent.memory) > learn_delay:
                 agent.train()
@@ -131,7 +132,7 @@ for i in range(ITERATIONS):
         total_reward += reward
         prev = states
         states = states[1:]
-        states.append(preprocess(s1, s2))
+        states.append(preprocess(s2))
         agent.remember(prev, action, reward, states, done)
         if done:
             rewards.append(total_reward)
@@ -141,12 +142,12 @@ for i in range(ITERATIONS):
         j += 1
         frames += 1
         #print(frames)
-    if i >= 1:
+    if i >= windows:
         avg = np.mean(rs)
         avg_reward.append(avg)
         if avg > best_avg_reward:
             best_avg_reward = avg
-            agent.q_network.save("pong_test1.h5")
+            agent.q_network.save("pong_test.h5")
     else: 
         avg_reward.append(-21)
     
