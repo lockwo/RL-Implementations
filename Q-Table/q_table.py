@@ -82,7 +82,7 @@ for i in range(ITERATIONS):
         print('\nEnvironment solved in {} episodes.'.format(i), end="", flush=True)
         break
 
-#print(rewards[19900:])
+plt.ylim(0,10)
 plt.plot(rewards, color='olive', label='Reward')
 plt.plot(avg_reward, color='red', label='Average')
 plt.legend()
