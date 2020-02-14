@@ -25,7 +25,7 @@ class DQN_AGENT(object):
         x = tf.keras.layers.Dense(32, activation='relu', name='dense3')(x)
         x = tf.keras.layers.Dense(self.action_space, name='output')(x)
         model = tf.keras.models.Model(inputs=inputs, outputs=x)
-        model.compile(optimizer=tf.keras.optimizers.Adam(), loss='mse', metrics=['mse', 'mse'])
+        model.compile(optimizer=tf.keras.optimizers.Adam(), loss='mse', metrics=['mse'])
         return model
 
     def remember(self, state, action, reward, next_state, done):
@@ -67,7 +67,7 @@ print(env.observation_space, env.observation_space.shape)
 agent = DQN_AGENT(env.action_space.n, env.observation_space.shape, batch_size)
 rewards = []
 # Uncomment the line before to load model
-#agent.q_network = tf.keras.models.load_model("cartpole.h5")
+agent.q_network = tf.keras.models.load_model("cartpole.h5")
 avg_reward = deque(maxlen=ITERATIONS)
 best_avg_reward = -math.inf
 rs = deque(maxlen=windows)
@@ -77,12 +77,13 @@ for i in range(ITERATIONS):
     total_reward = 0
     done = False
     while not done:
+        #env.render()
         action = agent.get_action(s1)
         s2, reward, done, info = env.step(action)
         total_reward += reward
         agent.remember(s1, action, reward, s2, done)
-        if len(agent.memory) > batch_size:
-            agent.train()
+        #if len(agent.memory) > 10000:
+        #    agent.train()
         if done:
             rewards.append(total_reward)
             rs.append(total_reward)
@@ -93,7 +94,7 @@ for i in range(ITERATIONS):
         avg_reward.append(avg)
         if avg > best_avg_reward:
             best_avg_reward = avg
-            agent.q_network.save("cartpole.h5")
+            agent.q_network.save("pong_ram.h5")
     else: 
         avg_reward.append(-2000)
     
