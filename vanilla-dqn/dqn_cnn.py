@@ -8,8 +8,6 @@ import tensorflow as tf
 import PIL as pil
 import time
 
-# It's a pain, because I only have access to tf 1.15 on a fast computer but I wrote this originally for tf 2.0 and this is a hacky fix
-#sess = tf.InteractiveSession()
 
 class DQN_AGENT(object):
     def __init__(self, action_size, batch_size):
@@ -33,7 +31,7 @@ class DQN_AGENT(object):
         x = tf.keras.layers.Dense(512, activation='relu', name='dense1')(x)
         x = tf.keras.layers.Dense(self.action_space, name='output')(x)
         model = tf.keras.models.Model(inputs=inputs, outputs=x)
-        model.compile(optimizer=tf.keras.optimizers.Adam(), loss=tf.keras.losses.Huber(), metrics=['mae'])
+        model.compile(optimizer=tf.keras.optimizers.Adam(), loss="huber_loss", metrics=['mae'])
         return model
 
     def remember(self, state, action, reward, next_state, done):
@@ -74,33 +72,17 @@ class DQN_AGENT(object):
             self.epsilon *= self.epsilon_decay
 
 def preprocess(encode_frame):
-    '''
-    # This code is here, because I am bad at using tensorflow
-    encode_frame = np.asarray(encode_frame)
-    encode_frame = tf.image.rgb_to_grayscale(encode_frame)
-    encode_frame = tf.image.crop_to_bounding_box(encode_frame, 34, 0, 160, 160)
-    encode_frame = tf.image.resize(encode_frame, [84,84], method=tf.image.ResizeMethod.NEAREST_NEIGHBOR)
-    return encode_frame
-    
-    with tf.compat.v1.Session() as ses:
-        a = tf.constant(encode_frame)
-        encode_frame = ses.run(a)
-    encode_frame = np.reshape(encode_frame, (84,84))
-    img = pil.Image.fromarray(encode_frame, 'L')
-    '''
     img = pil.Image.fromarray(encode_frame, 'RGB').convert('L').resize((84,110))
     img = img.crop((0, 18, 84, 102))
     img = np.asarray(img.getdata(), dtype=np.uint8).reshape(img.size[0], img.size[1], 1)
     return img
-    #print(img.shape)
-    #img.save('f2.png')
     
 
 # Hyperparameters
 ITERATIONS = 20000
 batch_size = 32
 windows = 100
-learn_delay = 50000
+learn_delay = 0
 
 # This is the standard stuff for Open AI Gym. Be sure to check out their docs if you need more help.
 env = gym.make("Pong-v0").env
@@ -110,7 +92,7 @@ print(env.observation_space, env.observation_space.shape)
 agent = DQN_AGENT(env.action_space.n, batch_size)
 rewards = []
 # Uncomment the line before to load model
-#agent.q_network = tf.keras.models.load_model("pong.h5")
+agent.q_network = tf.keras.models.load_model("pong_test.h5")
 avg_reward = deque(maxlen=ITERATIONS)
 best_avg_reward = -math.inf
 rs = deque(maxlen=windows)
@@ -125,8 +107,8 @@ for i in range(ITERATIONS):
     while not done:
         env.render()
         if j % 4 == 0:
-            if len(agent.memory) > learn_delay:
-                agent.train()
+            #if len(agent.memory) > learn_delay:
+            #    agent.train()
             action = agent.get_action(states)
         s2, reward, done, info = env.step(action)
         total_reward += reward
