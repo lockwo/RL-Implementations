@@ -20,6 +20,7 @@ Below is a list of algorithms I intended to make (the checked ones have already 
 - [ ] Monte Carlo Tree Search (MCTS) / Alpha-Beta Pruning
 - [ ] Deep Deterministic Policy Gradient (DDPG)
 - [ ] Twin Delayed Deep Deterministic Policy Gradients (TD3)
+- [ ] REINFORCE/VPG
 - [ ] Proximal Policy Optimization (PPO) / Trust Region Policy Optimization (TRPO)
 - [ ] Asynchronous Advantage Actor Critic (A3C)
 - [ ] Soft Actor Critic (SAC)
