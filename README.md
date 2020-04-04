@@ -25,8 +25,9 @@ Below is a list of algorithms I intended to make (the checked ones have already 
 - [ ] Asynchronous Advantage Actor Critic (A3C)
 - [ ] Soft Actor Critic (SAC)
 - [ ] World Models
-- [X] AlphaZero (see https://github.com/lockwo/Learning_and_Advanced_Game_AI/tree/master/final) Not exact, but I will improve later
+- [ ] AlphaZero (see https://github.com/lockwo/Learning_and_Advanced_Game_AI/tree/master/final) Not exact, but I will improve later
 - [ ] MuZero
+- [x] lpha-Beta Tree Search
 - [ ] MARL? (I know very little about this, but I am very interested in learning, but it will probably be later)
 
 # Notes for each implementation
@@ -49,5 +50,9 @@ One of the strengths (in terms of computational efficiency) is DQN's ability to 
 
 Due to the training time of this (and likely future versions) I don't provide a trained bot. I hopefully will, once I figure out how to use my computational resources. However, until then, I will only upload trained bots for current techniques (i.e. things that are still frequently used, like PPO). Considering that in the paper they had to train for >40 hours which is not something I have (especially since they have more parallel computing knowledge, but I will certianly work on it). However, I did just fix a bug that might enable me to train it much faster.
 
-## Double DQN:
+## Alpha-Beta Pruning:
+
+Alpha-Beta pruning is a tree search algorithm for turn based 2 player games, in the case of my implementation: chess. It is very similar to minimax, except that it "prunes" certain nodes to increase computational efficiency. There is a maximizing player and a minimizing player, and you go through a normal tree search, but keep track of alpha and beta. Alpha begins at -infinity and represents the best score you can attain as a maximizng player (and the opposite for beta). This then gets adjusted as you go through the search. If a path cannot get above alpha, then it is pruned (for the max player). 
+
+Because of the depth complexity of chess, a complete tree search is not feasible (i.e. we cannot tree search to the end of the game). Thus an evaluation function is needed. I did not write mine, I pieced it together from different sources. It is not very good and as such you will often find that the computer does not make very good moves because it values things that it shouldn't. Improvements to the heuristic evaluation are left as an exercise for the user.
 
