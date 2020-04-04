@@ -10,7 +10,7 @@ Each algorithm will have its own folder that will be created when my implementat
 
 # Implementations
 
-Below is a list of algorithms I intended to make (the checked ones have already been implemented).
+Below is a list of algorithms I intend to make (the checked ones have already been implemented).
 
 - [X] Q-Table/SARSA
 - [X] DQN
