@@ -27,7 +27,7 @@ Below is a list of algorithms I intended to make (the checked ones have already 
 - [ ] World Models
 - [ ] AlphaZero (see https://github.com/lockwo/Learning_and_Advanced_Game_AI/tree/master/final) Not exact, but I will improve later
 - [ ] MuZero
-- [x] lpha-Beta Tree Search
+- [x] Alpha-Beta Tree Search
 - [ ] MARL? (I know very little about this, but I am very interested in learning, but it will probably be later)
 
 # Notes for each implementation
