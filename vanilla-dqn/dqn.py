@@ -13,7 +13,7 @@ class DQN_AGENT(object):
         self.memory = deque(maxlen=20000)
         self.batch = batch_size
         # Q Learning Parameters
-        self.gamma = 0.9 # DISCOUNT FACTOR, CLOSE TO 1 = LONG TERM
+        self.gamma = 0.95 # DISCOUNT FACTOR, CLOSE TO 1 = LONG TERM
         self.epsilon = 1.0 # Exploration rate
         self.epsilon_decay = 0.9
         self.epsilon_min = 0.01
@@ -46,11 +46,10 @@ class DQN_AGENT(object):
             if done:
                 target_f[action] = reward
             else:
-                q_pred = np.amax(self.q_network.predict(next_state)[0])
+                q_pred = self.q_network.predict(next_state)[0][action]
                 target_f[action] = reward + self.gamma*q_pred
             target_f = np.array([target_f,])
             self.q_network.fit(state, target_f, epochs=1, verbose=0)
-
         if self.epsilon > self.epsilon_min:
             self.epsilon *= self.epsilon_decay
 
@@ -60,14 +59,14 @@ batch_size = 32
 windows = 100
 
 # This is the standard stuff for Open AI Gym. Be sure to check out their docs if you need more help.
-env = gym.make("CartPole-v1").env
-
+env = gym.make("CartPole-v1")
+'''env.observation_space.shape'''
 print(env.action_space)
 print(env.observation_space, env.observation_space.shape)
 agent = DQN_AGENT(env.action_space.n, env.observation_space.shape, batch_size)
 rewards = []
 # Uncomment the line before to load model
-#agent.q_network = tf.keras.models.load_model("pong_ram.h5")
+#agent.q_network = tf.keras.models.load_model("cartpole.h5")
 avg_reward = deque(maxlen=ITERATIONS)
 best_avg_reward = -math.inf
 rs = deque(maxlen=windows)
@@ -82,7 +81,7 @@ for i in range(ITERATIONS):
         s2, reward, done, info = env.step(action)
         total_reward += reward
         agent.remember(s1, action, reward, s2, done)
-        if len(agent.memory) > 10000:
+        if len(agent.memory) > 1000 and done:
             agent.train()
         if done:
             rewards.append(total_reward)
@@ -94,13 +93,13 @@ for i in range(ITERATIONS):
         avg_reward.append(avg)
         if avg > best_avg_reward:
             best_avg_reward = avg
-            agent.q_network.save("cartpole.h5")
+            #agent.q_network.save("cartpole.h5")
     else: 
         avg_reward.append(-2000)
     
-    print("\rEpisode {}/{} || Best average reward {}, Current Iteration Reward {}".format(i, ITERATIONS, best_avg_reward, total_reward), end='', flush=True)
+    print("\rEpisode {}/{} || Best average reward {}, Current Iteration Reward {}".format(i, ITERATIONS, best_avg_reward, total_reward) , end='', flush=True)
 
-plt.ylim(0,200)
+plt.ylim(0,150)
 plt.plot(rewards, color='olive', label='Reward')
 plt.plot(avg_reward, color='red', label='Average')
 plt.legend()
