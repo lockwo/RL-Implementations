@@ -9,21 +9,21 @@ import PIL as pil
 import time
 
 
-class double_dqn_agent(object):
+class DQN_AGENT(object):
     def __init__(self, action_size, batch_size):
         self.history = 4
         self.action_space = action_size
-        self.q_network = self.make_net(state_size)
-        self.target = self.make_net(state_size)
-        self.move_weights()
+        self.q_network = self.make_net()
         self.memory = deque(maxlen=1000000)
         self.batch = batch_size
         # Q Learning Parameters
-        self.gamma = 0.95 # DISCOUNT FACTOR, CLOSE TO 1 = LONG TERM
+        self.gamma = 0.99 # DISCOUNT FACTOR, CLOSE TO 1 = LONG TERM
         self.epsilon = 1.0 # Exploration rate
-        self.epsilon_decay = 0.995
-        self.epsilon_min = 0.01
-        self.tau = 0.01
+        self.epsilon_decay = 0.9
+        self.epsilon_min = 0.1
+
+    def merge(self, tensor):
+        return tensor[0] + (tensor[1] - tf.math.reduce_mean(tensor[1]))
 
     def make_net(self):
         inputs = tf.keras.layers.Input(shape=(84,84,self.history))
@@ -31,23 +31,17 @@ class double_dqn_agent(object):
         x = tf.keras.layers.Conv2D(64, (4,4), strides=2, activation='relu', name='conv2')(x)
         x = tf.keras.layers.Conv2D(64, (3,3), strides=1, activation='relu', name='conv3')(x)
         x = tf.keras.layers.Flatten()(x)
-        x = tf.keras.layers.Dense(512, activation='relu', name='dense1')(x)
-        x = tf.keras.layers.Dense(self.action_space, name='output')(x)
-        model = tf.keras.models.Model(inputs=inputs, outputs=x)
-        model.compile(optimizer=tf.keras.optimizers.Adam(), loss="huber_loss", metrics=['mae'])
+        value = tf.keras.layers.Dense(512, activation='relu', name='value1')(x)
+        value = tf.keras.layers.Dense(1, activation='relu', name='value2')(value)
+        action = tf.keras.layers.Dense(512, activation='relu', name='action1')(x)
+        action = tf.keras.layers.Dense(self.action_space, name='action2')(action)
+        out = tf.keras.layers.Lambda(self.merge, name='merge')([value, action])
+        model = tf.keras.models.Model(inputs=inputs, outputs=out)
+        model.compile(optimizer=tf.keras.optimizers.Adam(), loss="huber_loss")
         return model
 
     def remember(self, state, action, reward, next_state, done):
         self.memory.append((state, action, reward, next_state, done))
-
-    def move_weights(self):
-        self.target.set_weights(self.q_network.get_weights())
-
-    def update_prime(self):
-        qweights = np.asarray(self.q_network.get_weights())
-        qprimeweights = np.asarray(self.target.get_weights())
-        qprimeweights = self.tau * qweights + (1 - self.tau) * qprimeweights
-        self.target.set_weights(qprimeweights)
 
     def get_action(self, obs):
         if random.random() < self.epsilon: 
@@ -73,18 +67,13 @@ class double_dqn_agent(object):
             if done:
                 target_f[action] = reward
             else:
-                q_pred = np.amax(self.target.predict(next_state)[0])
+                q_pred = np.amax(self.q_network.predict(next_state)[0])
                 target_f[action] = reward + self.gamma * q_pred
             targets.append(targets)
             target_f = np.array([target_f,])
             self.q_network.fit(state, target_f, epochs=1, verbose=0)
         #self.q_network.fit(np.array(states), np.array(targets), batch_size=self.batch, epochs=1, verbose=1) # Batch training
         
-        if iteration % 10 == 0:
-            self.move_weights()
-        else:
-            self.update_prime()
-
         if self.epsilon > self.epsilon_min:
             self.epsilon *= self.epsilon_decay
 
@@ -99,7 +88,7 @@ def preprocess(encode_frame):
 ITERATIONS = 20000
 batch_size = 32
 windows = 100
-learn_delay = 1000
+learn_delay = 50000
 
 env = gym.make("Pong-v0").env
 
@@ -108,7 +97,7 @@ print(env.observation_space, env.observation_space.shape)
 agent = DQN_AGENT(env.action_space.n, batch_size)
 rewards = []
 # Uncomment the line before to load model
-#agent.q_network = tf.keras.models.load_model("pong_ddqn.h5")
+#agent.q_network = tf.keras.models.load_model("pong_duel.h5")
 avg_reward = deque(maxlen=ITERATIONS)
 best_avg_reward = -math.inf
 rs = deque(maxlen=windows)
@@ -144,14 +133,12 @@ for i in range(ITERATIONS):
         avg_reward.append(avg)
         if avg > best_avg_reward:
             best_avg_reward = avg
-            agent.q_network.save("pong_ddqn.h5")
+            agent.q_network.save("pong_duel.h5")
     else: 
         avg_reward.append(-21)
     
     print("\rEpisode {}/{} || Best average reward {}, Current Iteration Reward {}, Frames {}".format(i, ITERATIONS, best_avg_reward, total_reward, frames))#, end='', flush=True)
 
-np.save("drewards", np.asarray(rewards))
-np.save("daverages", np.asarray(avg_reward))
 '''
 plt.ylim(0,200)
 plt.plot(rewards, color='olive', label='Reward')
