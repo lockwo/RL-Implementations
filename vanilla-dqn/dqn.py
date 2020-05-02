@@ -46,7 +46,7 @@ class DQN_AGENT(object):
             if done:
                 target_f[action] = reward
             else:
-                q_pred = self.q_network.predict(next_state)[0][action]
+                q_pred = np.amax(self.q_network.predict(next_state)[0])
                 target_f[action] = reward + self.gamma*q_pred
             target_f = np.array([target_f,])
             self.q_network.fit(state, target_f, epochs=1, verbose=0)
@@ -54,7 +54,7 @@ class DQN_AGENT(object):
             self.epsilon *= self.epsilon_decay
 
 # Hyperparameters
-ITERATIONS = 20000
+ITERATIONS = 3000
 batch_size = 32
 windows = 100
 
@@ -93,13 +93,15 @@ for i in range(ITERATIONS):
         avg_reward.append(avg)
         if avg > best_avg_reward:
             best_avg_reward = avg
-            #agent.q_network.save("cartpole.h5")
+            agent.q_network.save("cartpole1.h5")
     else: 
-        avg_reward.append(-2000)
+        avg_reward.append(0)
     
     print("\rEpisode {}/{} || Best average reward {}, Current Iteration Reward {}".format(i, ITERATIONS, best_avg_reward, total_reward) , end='', flush=True)
 
-plt.ylim(0,150)
+np.save("rewards", np.asarray(rewards))
+np.save("averages", np.asarray(avg_reward))
+plt.ylim(0,220)
 plt.plot(rewards, color='olive', label='Reward')
 plt.plot(avg_reward, color='red', label='Average')
 plt.legend()
