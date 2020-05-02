@@ -61,8 +61,8 @@ class DQN_AGENT(object):
             if done:
                 target_f[action] = reward
             else:
-                q_pred = self.q_network.predict(next_state)[0][action]
-                target_f[action] = reward + self.gamma*q_pred
+                q_pred = np.amax(self.q_network.predict(next_state)[0])
+                target_f[action] = reward + self.gamma * q_pred
             targets.append(targets)
             target_f = np.array([target_f,])
             self.q_network.fit(state, target_f, epochs=1, verbose=0)
@@ -84,7 +84,6 @@ batch_size = 32
 windows = 100
 learn_delay = 1000
 
-# This is the standard stuff for Open AI Gym. Be sure to check out their docs if you need more help.
 env = gym.make("Pong-v0").env
 
 print(env.action_space)
@@ -92,7 +91,7 @@ print(env.observation_space, env.observation_space.shape)
 agent = DQN_AGENT(env.action_space.n, batch_size)
 rewards = []
 # Uncomment the line before to load model
-#agent.q_network = tf.keras.models.load_model("pong_test.h5")
+agent.q_network = tf.keras.models.load_model("pong_test.h5")
 avg_reward = deque(maxlen=ITERATIONS)
 best_avg_reward = -math.inf
 rs = deque(maxlen=windows)
@@ -128,7 +127,7 @@ for i in range(ITERATIONS):
         avg_reward.append(avg)
         if avg > best_avg_reward:
             best_avg_reward = avg
-            #agent.q_network.save("pong_test.h5")
+            agent.q_network.save("pong_test.h5")
     else: 
         avg_reward.append(-21)
     
