@@ -54,6 +54,10 @@ Due to the training time of this (and likely future versions) I don't provide a 
 
 Double DQN is very similar to DQN. The difference is that double dqn has two neural networks that predict the Q values. The main network and the target network. The target network is used only to predict the future Q value in the Bellman equation and it updated via Polyak averaging every training step and a direct copying of weights every certain amount. The reason for having this target network is to increase stability and likelihood of convergance. Sometimes vanilla DQN trains to quickly and fails to converge on the correct solution and this target network is a way to minimize this failure. 
 
+## Dueling DQN:
+
+Another improvement on the vanilla DQN, this relies on the understanding of exactly what a Q value is. A Q value represents the value of that state in addition to the future potential value. These can be separated into their own neural network layers before being recombined. This is done so the network can learn to predict the value and action calculations independently to improve each. This is a very intuitive improvement and adds very little in terms of lines of code. 
+
 ## Alpha-Beta Pruning:
 
 Alpha-Beta pruning is a tree search algorithm for turn based 2 player games, in the case of my implementation: chess. It is very similar to minimax, except that it "prunes" certain nodes to increase computational efficiency. There is a maximizing player and a minimizing player, and you go through a normal tree search, but keep track of alpha and beta. Alpha begins at -infinity and represents the best score you can attain as a maximizng player (and the opposite for beta). This then gets adjusted as you go through the search. If a path cannot get above alpha, then it is pruned (for the max player). 
