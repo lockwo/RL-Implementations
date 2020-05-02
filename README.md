@@ -15,7 +15,7 @@ Below is a list of algorithms I intend to make (the checked ones have already be
 - [X] Q-Table/SARSA
 - [X] DQN
 - [X] Double DQN
-- [ ] Dueling DQN
+- [X] Dueling DQN
 - [ ] Full DQN (Double Dueling DQN with Prioritized Experience Replay)
 - [ ] Deep Deterministic Policy Gradient (DDPG)
 - [ ] Twin Delayed Deep Deterministic Policy Gradients (TD3)
@@ -26,7 +26,7 @@ Below is a list of algorithms I intend to make (the checked ones have already be
 - [ ] World Models
 - [ ] AlphaZero (see https://github.com/lockwo/Learning_and_Advanced_Game_AI/tree/master/final) Not exact, but I will improve later
 - [ ] MuZero
-- [x] Alpha-Beta Tree Search
+- [X] Alpha-Beta Tree Search
 - [ ] MARL? (I know very little about this, but I am very interested in learning, but it will probably be later)
 
 # Notes for each implementation
