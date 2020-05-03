@@ -13,8 +13,8 @@ class double_dqn_agent(object):
     def __init__(self, action_size, batch_size):
         self.history = 4
         self.action_space = action_size
-        self.q_network = self.make_net(state_size)
-        self.target = self.make_net(state_size)
+        self.q_network = self.make_net()
+        self.target = self.make_net()
         self.move_weights()
         self.memory = deque(maxlen=1000000)
         self.batch = batch_size
@@ -57,7 +57,7 @@ class double_dqn_agent(object):
             obs = obs / 255.
             return np.argmax(self.q_network.predict(np.array([obs,]))[0])
 
-    def train(self):
+    def train(self, iteration):
         minibatch = random.sample(self.memory, self.batch)
         states, targets = [], []
         for state, action, reward, next_state, done in minibatch:
@@ -105,7 +105,7 @@ env = gym.make("Pong-v0").env
 
 print(env.action_space)
 print(env.observation_space, env.observation_space.shape)
-agent = DQN_AGENT(env.action_space.n, batch_size)
+agent = double_dqn_agent(env.action_space.n, batch_size)
 rewards = []
 # Uncomment the line before to load model
 #agent.q_network = tf.keras.models.load_model("pong_ddqn.h5")
@@ -130,7 +130,7 @@ for i in range(ITERATIONS):
         states.append(preprocess(s2))
         agent.remember(prev, action, reward, states, done)
         if len(agent.memory) > learn_delay and done:
-            agent.train()
+            agent.train(i)
         if done:
             rewards.append(total_reward)
             rs.append(total_reward)
@@ -150,6 +150,8 @@ for i in range(ITERATIONS):
     
     print("\rEpisode {}/{} || Best average reward {}, Current Iteration Reward {}, Frames {}".format(i, ITERATIONS, best_avg_reward, total_reward, frames))#, end='', flush=True)
 
+np.save("drewards", np.asarray(rewards))
+np.save("daverages", np.asarray(avg_reward))
 '''
 plt.ylim(0,200)
 plt.plot(rewards, color='olive', label='Reward')
