@@ -113,7 +113,7 @@ for i in range(ITERATIONS):
     else: 
         avg_reward.append(0)
     
-    print("\rEpisode {}/{} || Best average reward {}, Current Iteration Reward {}".format(i, ITERATIONS, best_avg_reward, total_reward)) #, end='', flush=True)
+    print("\rEpisode {}/{} || Best average reward {}, Current Iteration Reward {}".format(i, ITERATIONS, best_avg_reward, total_reward)) , end='', flush=True)
 
 np.save("rewards", np.asarray(rewards))
 np.save("averages", np.asarray(avg_reward))
@@ -124,4 +124,3 @@ plt.legend()
 plt.ylabel('Reward')
 plt.xlabel('Generation')
 plt.show()
-
