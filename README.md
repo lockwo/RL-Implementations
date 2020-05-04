@@ -19,7 +19,7 @@ Below is a list of algorithms I intend to make (the checked ones have already be
 - [ ] Full DQN (Double Dueling DQN with Prioritized Experience Replay)
 - [ ] Deep Deterministic Policy Gradient (DDPG)
 - [ ] Twin Delayed Deep Deterministic Policy Gradients (TD3)
-- [ ] REINFORCE/VPG
+- [X] REINFORCE/VPG
 - [ ] Proximal Policy Optimization (PPO) / Trust Region Policy Optimization (TRPO)
 - [ ] Asynchronous Advantage Actor Critic (A3C)
 - [ ] Soft Actor Critic (SAC)
@@ -57,6 +57,10 @@ Double DQN is very similar to DQN. The difference is that double dqn has two neu
 ## Dueling DQN:
 
 Another improvement on the vanilla DQN, this relies on the understanding of exactly what a Q value is. A Q value represents the value of that state in addition to the future potential value. These can be separated into their own neural network layers before being recombined. This is done so the network can learn to predict the value and action calculations independently to improve each. This is a very intuitive improvement and adds very little in terms of lines of code. 
+
+## REINFORCE:
+
+This is the straight forward Monte Carlo Policy Gradient Method. Just a quick not, there appears to be a bug in tf2, so this code won't work with it (it does work with tf 1.14). They appear to have changed the categorical crossentropy loss in such a way that it converges to 0. Regardless, in this algorithm the ANN represents the policy rather than the Q prediction. That means that the network tells you exactly what the probabilities of each action are (which you then choose from). You update the policy by doing discounted reward at the end of each policy rollout. 
 
 ## Alpha-Beta Pruning:
 
