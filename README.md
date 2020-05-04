@@ -1,12 +1,12 @@
 # RL-Implementation
 
-From scratch implementations of prominent reinforcement learning techniques using using tensorflow/keras, Open AI Gym and potentially other environmemts. I will link all the papers and information in each folder. The code will be moderately commented, enough to hopefully understand what is going on. Each folder will also contain the trained model for an example task. 
+From scratch implementations of prominent reinforcement learning techniques using using tensorflow/keras, Open AI Gym and potentially other environmemts. I will link all the papers and information in each folder. The code will be moderately commented, enough to hopefully understand what is going on. I will upload version of the code for both cartpole and visual (atari/CNN) versions. I do not have the ability to train every atari game on my laptop and as such I will only be training cartpole versions to verify that the code is correct. 
 
-This repository is meant to be an educational resource, both for those that visit it and for myself. I find that just reading papers can be hard to fully understand and implementing algorithms in code greatly helps my understanding. This repo isn't meant to be actually used like a package (if you want to download existing implementation of the algorithms there are many other great resources). Rather this is just documentation of my journey from early to contemporary techniques in reinforcement learning.
+This repository is meant to be an educational resource, both for those that visit it and for myself. I find that just reading papers can be hard to fully understand and implementing algorithms in code greatly helps my understanding. This repo isn't meant to be used like a package (if you just want to download existing implementation of the algorithms there are many other great resources). Rather this is just documentation of my journey from early to contemporary techniques in reinforcement learning.
 
 # Repo organization
 
-Each algorithm will have its own folder that will be created when my implementation is created. The environments folder contains any environments that I have made from scratch. I will only upload easily trainable models or contemporary models. Due to my neophytic parallel programming skills, the way in which I would train things like DQN involve running many simultaneous game generation programs, storing that information, then training, alternating these batches in 6 hours shifts (that is the maximum job time). This requires code modification and aditional work, hence why I do not do it for all. I do run all programs and train them briefly, to verify they are (mostly) correct, but the likely ones to have trained models are full dqn, ddpg, ppo, and sac (maybe).
+Each algorithm will have its own folder that will be created when my implementation is created. The environments folder contains any environments that I have made from scratch. I will only upload easily trainable models or contemporary models. I do run all programs and train them briefly, to verify they are (mostly) correct.
 
 # Implementations
 
