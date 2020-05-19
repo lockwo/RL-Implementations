@@ -21,7 +21,7 @@ Below is a list of algorithms I intend to make (the checked ones have already be
 - [ ] Twin Delayed Deep Deterministic Policy Gradients (TD3)
 - [X] REINFORCE/VPG
 - [ ] Proximal Policy Optimization (PPO) / Trust Region Policy Optimization (TRPO)
-- [ ] Asynchronous Advantage Actor Critic (A3C)
+- [ ] Advantage Actor Critic (A2C)
 - [ ] Soft Actor Critic (SAC)
 - [ ] World Models
 - [ ] AlphaZero (see https://github.com/lockwo/Learning_and_Advanced_Game_AI/tree/master/final) Not exact, but I will improve later
