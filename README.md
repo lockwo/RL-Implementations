@@ -69,7 +69,7 @@ Another improvement on the vanilla DQN, this relies on the understanding of exac
 
 ## REINFORCE:
 
-This is the straight forward Monte Carlo Policy Gradient Method. Just a quick not, there appears to be a bug in tf2, so this code won't work with it (it does work with tf 1.14). They appear to have changed the categorical crossentropy loss in such a way that it converges to 0. Regardless, in this algorithm the ANN represents the policy rather than the Q prediction. That means that the network tells you exactly what the probabilities of each action are (which you then choose from). You update the policy by doing discounted reward at the end of each policy rollout. 
+This is the straight forward Monte Carlo Policy Gradient Method. Fixed the bug using a custom loss function. Regardless, in this algorithm the ANN represents the policy rather than the Q prediction. That means that the network tells you exactly what the probabilities of each action are (which you then choose from). You update the policy by doing discounted reward at the end of each policy rollout. 
 
 ## Alpha-Beta Pruning:
 
