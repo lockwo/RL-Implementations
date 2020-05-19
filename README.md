@@ -77,3 +77,6 @@ Alpha-Beta pruning is a tree search algorithm for turn based 2 player games, in 
 
 Because of the depth complexity of chess, a complete tree search is not feasible (i.e. we cannot tree search to the end of the game). Thus an evaluation function is needed. I did not write mine, I pieced it together from different sources. It is not very good and as such you will often find that the computer does not make very good moves because it values things that it shouldn't. Improvements to the heuristic evaluation are left as an exercise for the user.
 
+# Reinforcement Learning for the World
+
+<a href="https://info.flagcounter.com/lhWB"><img src="https://s11.flagcounter.com/countxl/lhWB/bg_FFFFFF/txt_000000/border_CCCCCC/columns_3/maxflags_12/viewers_0/labels_0/pageviews_1/flags_0/percent_0/" alt="Flag Counter" border="0"></a>
