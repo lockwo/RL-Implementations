@@ -5,13 +5,11 @@ import matplotlib.pyplot as plt
 import math
 from collections import deque
 import tensorflow as tf
-from keras.losses import categorical_crossentropy
 
+tf.compat.v1.disable_eager_execution()
 
-if tf.__version__ == "2.1.0":
-    import sys
-    print("WILL NOT WORK UNTIL TF FIXES CATEGORICAL CROSSENTROPY BUG")
-    sys.exit()
+def _entropy_loss(target, output):
+    return -tf.math.reduce_mean(target*tf.math.log(output))
 
 class REINFORCE_agent(object):
     def __init__(self, action_size, state_size):
@@ -29,7 +27,7 @@ class REINFORCE_agent(object):
         y = tf.keras.layers.Dense(self.action_space, activation='softmax')(y)
         model = tf.keras.models.Model(inputs=x, outputs=y)
         model.summary()
-        model.compile(loss=categorical_crossentropy, optimizer=tf.keras.optimizers.Adam())
+        model.compile(loss=_entropy_loss, optimizer=tf.keras.optimizers.Adam())
         return model
 
     def remember(self, state, action, reward):
@@ -50,8 +48,8 @@ class REINFORCE_agent(object):
             Gt = Gt * self.gamma + rewards[i]
             d_rewards[i] = Gt
         # Normalize
-        #d_rewards -= np.mean(d_rewards)
-        #d_rewards /= np.std(d_rewards) 
+        d_rewards -= np.mean(d_rewards)
+        d_rewards /= np.std(d_rewards) 
         return d_rewards
 
     def train(self):
@@ -74,8 +72,8 @@ class REINFORCE_agent(object):
 
 
 # Hyperparameters
-ITERATIONS = 1000
-windows = 100
+ITERATIONS = 300
+windows = 50
 
 env = gym.make("CartPole-v1")
 #env.observation_space.shape
@@ -109,14 +107,15 @@ for i in range(ITERATIONS):
         avg_reward.append(avg)
         if avg > best_avg_reward:
             best_avg_reward = avg
-            agent.policy_net.save("reinforce_cartpole.h5")
+            #agent.policy_net.save("reinforce_cartpole.h5")
     else: 
         avg_reward.append(0)
     
-    print("\rEpisode {}/{} || Best average reward {}, Current Iteration Reward {}".format(i, ITERATIONS, best_avg_reward, total_reward)) , end='', flush=True)
+    print("\rEpisode {}/{} || Best average reward {}, Current Iteration Reward {}".format(i, ITERATIONS, best_avg_reward, total_reward), end='', flush=True)
+   
 
-np.save("rewards", np.asarray(rewards))
-np.save("averages", np.asarray(avg_reward))
+np.save("nn_rewards", np.asarray(rewards))
+np.save("nn_averages", np.asarray(avg_reward))
 plt.ylim(0,500)
 plt.plot(rewards, color='olive', label='Reward')
 plt.plot(avg_reward, color='red', label='Average')
