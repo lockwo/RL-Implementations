@@ -16,6 +16,7 @@ Below is a list of algorithms I intend to make (the checked ones have already be
 - [X] DQN
 - [X] Double DQN
 - [X] Dueling DQN
+- [ ] Boostrapped DQN
 - [ ] Full DQN (Double Dueling DQN with Prioritized Experience Replay)
 - [ ] Deep Deterministic Policy Gradient (DDPG)
 - [ ] Twin Delayed Deep Deterministic Policy Gradients (TD3)
