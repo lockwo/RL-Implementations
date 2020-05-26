@@ -21,7 +21,8 @@ Below is a list of algorithms I intend to make (the checked ones have already be
 - [ ] Deep Deterministic Policy Gradient (DDPG)
 - [ ] Twin Delayed Deep Deterministic Policy Gradients (TD3)
 - [X] REINFORCE/VPG
-- [ ] Proximal Policy Optimization (PPO) / Trust Region Policy Optimization (TRPO)
+- [ ] Trust Region Policy Optimization (TRPO)
+- [ ] Proximal Policy Optimization (PPO)
 - [ ] Advantage Actor Critic (A2C)
 - [ ] Soft Actor Critic (SAC)
 - [ ] World Models
