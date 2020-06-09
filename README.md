@@ -1,12 +1,12 @@
 # RL-Implementation
 
-From scratch implementations of prominent reinforcement learning techniques using using tensorflow/keras, Open AI Gym and potentially other environmemts. I will link all the papers and information in each folder. The code will be moderately commented, enough to hopefully understand what is going on. I will upload version of the code for both cartpole and visual (atari/CNN) versions. I do not have the ability to train every atari game on my laptop and as such I will only be training cartpole versions to verify that the code is correct. 
+From scratch implementations of prominent reinforcement learning techniques using using tensorflow, Open AI Gym and potentially other environmemts. I provide the PDFs of all papers in the associated folder. The code will be moderately commented, enough to hopefully understand what is going on. I will upload version of the code for both cartpole (which I will have verified works) and sometimes CNN versions. My computational power is limited, so I will not actually fully train the CNN versions, but I will verify every cartpole example to verify the algorithm works.  
 
-This repository is meant to be an educational resource, both for those that visit it and for myself. I find that just reading papers can be hard to fully understand and implementing algorithms in code greatly helps my understanding. This repo isn't meant to be used like a package (if you just want to download existing implementation of the algorithms there are many other great resources). Rather this is just documentation of my journey from early to contemporary techniques in reinforcement learning.
+This repository is meant to be an educational resource, both for those that visit it and for myself. I find that just reading papers can be hard to fully understand and implementing algorithms in code greatly helps my understanding. This repo isn't meant to be used like a package (if you just want to download existing implementation of the algorithms there are many other great resources). Rather These are meant to be the simplest possible implementations of prominent RL algorithms that are easy to understand. 
 
 # Repo organization
 
-Each algorithm will have its own folder that will be created when my implementation is created. The environments folder contains any environments that I have made from scratch. I will only upload easily trainable models or contemporary models. I do run all programs and train them briefly, to verify they are (mostly) correct.
+Each algorithm will have its own folder. The environments folder contains any environments that I have made from scratch. I will only upload easily trainable models or contemporary models. I do run all programs and train them briefly, to verify they are (mostly) correct.
 
 # Implementations
 
@@ -75,7 +75,7 @@ This is the straight forward Monte Carlo Policy Gradient Method. Fixed the bug u
 
 ## Advantage Actor Critic (A2C):
 
-This algorithm is very similar to the REINFORCE algorithm. The policy network in REINFORCE is updated via [!equation](http://www.sciweavers.org/upload/Tex2Img_1591662123/render.png), but this discounted reward is replaced in A2C with an estimate of the advantage, [!equation](http://www.sciweavers.org/upload/Tex2Img_1591662241/render.png). Remember from dueling networks that Q(s,a) = V(s) + A(s,a). Thus A(s,a) = Q(s,a) - V(s). This means that a single network can predict V(s) and the advtange can be dervied from this. Thus the policy and value are different heads of the same network. Although there are asynchronous versions of this, they offer few improvements, thus I implement it synchronously.
+This algorithm is very similar to the REINFORCE algorithm. The policy network in REINFORCE is updated via ![equation](http://www.sciweavers.org/upload/Tex2Img_1591662123/render.png), but this discounted reward is replaced in A2C with an estimate of the advantage, ![equation](http://www.sciweavers.org/upload/Tex2Img_1591662241/render.png). Remember from dueling networks that Q(s,a) = V(s) + A(s,a). Thus A(s,a) = Q(s,a) - V(s). This means that a single network can predict V(s) and the advtange can be dervied from this. Thus the policy and value are different heads of the same network. Although there are asynchronous versions of this, they offer few improvements, thus I implement it synchronously.
 
 ## Alpha-Beta Pruning:
 
