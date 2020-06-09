@@ -82,7 +82,6 @@ ITERATIONS = 1000
 batch_size = 32
 windows = 50
 
-# This is the standard stuff for Open AI Gym. Be sure to check out their docs if you need more help.
 env = gym.make("CartPole-v1")
 '''env.observation_space.shape'''
 print(env.action_space)
