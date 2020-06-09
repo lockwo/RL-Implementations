@@ -23,7 +23,7 @@ Below is a list of algorithms I intend to make (the checked ones have already be
 - [X] REINFORCE/VPG
 - [ ] Trust Region Policy Optimization (TRPO)
 - [ ] Proximal Policy Optimization (PPO)
-- [ ] Advantage Actor Critic (A2C)
+- [X] Advantage Actor Critic (A2C)
 - [ ] Soft Actor Critic (SAC)
 - [ ] World Models
 - [ ] AlphaZero (see https://github.com/lockwo/Learning_and_Advanced_Game_AI/tree/master/final) Not exact, but I will improve later
@@ -72,6 +72,10 @@ Another improvement on the vanilla DQN, this relies on the understanding of exac
 ## REINFORCE:
 
 This is the straight forward Monte Carlo Policy Gradient Method. Fixed the bug using a custom loss function. Regardless, in this algorithm the ANN represents the policy rather than the Q prediction. That means that the network tells you exactly what the probabilities of each action are (which you then choose from). You update the policy by doing discounted reward at the end of each policy rollout. 
+
+## Advantage Actor Critic (A2C):
+
+This algorithm is very similar to the REINFORCE algorithm. The policy network in REINFORCE is updated via [!equation](http://www.sciweavers.org/upload/Tex2Img_1591662123/render.png), but this discounted reward is replaced in A2C with an estimate of the advantage, [!equation](http://www.sciweavers.org/upload/Tex2Img_1591662241/render.png). Remember from dueling networks that Q(s,a) = V(s) + A(s,a). Thus A(s,a) = Q(s,a) - V(s). This means that a single network can predict V(s) and the advtange can be dervied from this. Thus the policy and value are different heads of the same network. Although there are asynchronous versions of this, they offer few improvements, thus I implement it synchronously.
 
 ## Alpha-Beta Pruning:
 
