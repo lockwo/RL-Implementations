@@ -33,13 +33,7 @@ Below is a list of algorithms I intend to make (the checked ones have already be
 
 # Graph Comparisons
 
-## DQN vs Dueling DQN:
-
-![](https://github.com/lockwo/RL-Implementation/blob/master/data_visual/Figure_1.png "DQN vs DDQN")
-
-## REINFORCE:
-
-![](https://github.com/lockwo/RL-Implementation/blob/master/data_visual/reinforce_graph.png "REINFORCE")
+See Data Visual.
 
 # Notes for each implementation
 
