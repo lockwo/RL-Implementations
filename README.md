@@ -69,7 +69,7 @@ This is the straight forward Monte Carlo Policy Gradient Method. Fixed the bug u
 
 ## Advantage Actor Critic (A2C):
 
-This algorithm is very similar to the REINFORCE algorithm. The policy network in REINFORCE is updated via ![equation](https://github.com/lockwo/RL-Implementation/blob/master/equations/reinforce.PNG), but this discounted reward is replaced in A2C with an estimate of the advantage, ![equation](https://github.com/lockwo/RL-Implementation/blob/master/equations/a2c.PNG). Remember from dueling networks that Q(s,a) = V(s) + A(s,a). Thus A(s,a) = Q(s,a) - V(s). This means that a single network can predict V(s) and the advtange can be dervied from this. Thus the policy and value are different heads of the same network. Although there are asynchronous versions of this, they offer few improvements, thus I implement it synchronously.
+This algorithm is very similar to the REINFORCE algorithm. The policy network in REINFORCE is updated via ![equation](https://github.com/lockwo/RL-Implementation/blob/master/equations/reinforce.PNG =200x100), but this discounted reward is replaced in A2C with an estimate of the advantage, ![equation](https://github.com/lockwo/RL-Implementation/blob/master/equations/a2c.PNG). Remember from dueling networks that Q(s,a) = V(s) + A(s,a). Thus A(s,a) = Q(s,a) - V(s). This means that a single network can predict V(s) and the advtange can be dervied from this. Thus the policy and value are different heads of the same network. Although there are asynchronous versions of this, they offer few improvements, thus I implement it synchronously.
 
 ## Alpha-Beta Pruning:
 
