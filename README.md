@@ -13,18 +13,20 @@ Each algorithm will have its own folder. The environments folder contains any en
 Below is a list of algorithms I intend to make (the checked ones have already been implemented).
 
 - [X] Q-Table/SARSA
-- [X] DQN
+- [X] Deep Q Network (DQN)
 - [X] Double DQN
 - [X] Dueling DQN
 - [ ] Boostrapped DQN
 - [ ] Full DQN (Double Dueling DQN with Prioritized Experience Replay)
-- [ ] Deep Deterministic Policy Gradient (DDPG)
-- [ ] Twin Delayed Deep Deterministic Policy Gradients (TD3)
 - [X] REINFORCE/VPG
 - [ ] Trust Region Policy Optimization (TRPO)
 - [ ] Proximal Policy Optimization (PPO)
 - [X] Advantage Actor Critic (A2C)
+- [ ] Actor Critic with Experience Replay (ACER)
+- [ ] Actor Critic using Kronecker-Factored Trust Region (ACKTR)
 - [ ] Soft Actor Critic (SAC)
+- [ ] Deep Deterministic Policy Gradient (DDPG)
+- [ ] Twin Delayed Deep Deterministic Policy Gradients (TD3)
 - [ ] World Models
 - [ ] AlphaZero (see https://github.com/lockwo/Learning_and_Advanced_Game_AI/tree/master/final) Not exact, but I will improve later
 - [ ] MuZero
