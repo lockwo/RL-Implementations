@@ -52,6 +52,11 @@ Each algorithm will have its own folder. The environments folder contains any en
 
 - [ ] FeUdal Network (FuN)
 
+## Meta-RL Methods
+
+- [ ] RL^2
+- [ ] Model-Agnostic Meta-Learning (MAML)
+
 # Graph Comparisons
 
 See Data Visual.
