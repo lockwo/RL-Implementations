@@ -8,11 +8,9 @@ This repository is meant to be an educational resource, both for those that visi
 
 Each algorithm will have its own folder. The environments folder contains any environments that I have made from scratch. I will only upload easily trainable models or contemporary models. I do run all programs and train them briefly, to verify they are (mostly) correct.
 
-# Implementations
+# Algorithms
 
-Below is a list of algorithms I intend to make (the checked ones have already been implemented).
-
-## Algorithms
+## Model Free Algorithms
 
 ### Q/Value Methods
 
@@ -38,6 +36,7 @@ Below is a list of algorithms I intend to make (the checked ones have already be
 - [ ] Proximal Policy Optimization (PPO)
 - [ ] Soft Actor Critic (SAC)
 
+## Model-Based Algorithms
 
 ### Tree Search Methods
 
@@ -45,9 +44,13 @@ Below is a list of algorithms I intend to make (the checked ones have already be
 - [ ] AlphaZero (see https://github.com/lockwo/Learning_and_Advanced_Game_AI/tree/master/final) Not exact, but I will improve later
 - [ ] MuZero
 
-### Exploration Methods
+## Exploration Methods
 
 - [ ] Intrinsic Curiosity Module (ICM) 
+
+## Hierarchical Methods
+
+- [ ] FeUdal Network (FuN)
 
 # Graph Comparisons
 
