@@ -18,7 +18,7 @@ Each algorithm will have its own folder. The environments folder contains any en
 - [X] Deep Q Network (DQN)
 - [X] Double DQN
 - [X] Dueling DQN
-- [ ] Boostrapped DQN
+- [X] Boostrapped DQN
 - [ ] Full DQN (n-Step Bootstrapped Double Dueling DQN with Prioritized Experience Replay)
 
 ### Policy Methods
