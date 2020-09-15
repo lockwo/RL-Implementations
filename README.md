@@ -19,7 +19,7 @@ Each algorithm will have its own folder. The environments folder contains any en
 - [X] Double DQN
 - [X] Dueling DQN
 - [ ] Boostrapped DQN
-- [ ] Full DQN (Double Dueling DQN with Prioritized Experience Replay)
+- [ ] Full DQN (n-Step Bootstrapped Double Dueling DQN with Prioritized Experience Replay)
 
 ### Policy Methods
 
