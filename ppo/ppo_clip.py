@@ -27,6 +27,7 @@ class PPO_agent(object):
     def ppo_loss(self, ytrue, ypred):
         #action = ytrue[:2]
         #log_prob = ytrue[2:]
+        # FIX FOR UNEVEN
         action, log_prob = tf.split(ytrue, num_or_size_splits=2, axis=1)
         ratio = tf.math.exp(tf.math.log(ypred) - log_prob)
         ratio = tf.clip_by_value(ratio, 1e-10, 10-1e-10)
@@ -95,15 +96,15 @@ class PPO_agent(object):
             return
         minibatch = random.sample(self.memory, self.M)
         i = 0
-        f = np.zeros(shape=(self.M, 4))
+        f = np.zeros(shape=(self.M, 2*self.action_space))
         #f = np.zeros(shape=(self.M, 2, 2))
         for s, a, r, v, log_prob in minibatch:
             state[i] = s
             #print(s, r, v, a)
             rws[i] = r
             action[i][a] = r - v[0]
-            f[i][:2] = action[i]
-            f[i][2:] = log_prob
+            f[i][:self.action_space] = action[i]
+            f[i][self.action_space:] = log_prob
             #f[i][0] = action[i]
             #f[i][2]
             i += 1
@@ -118,11 +119,11 @@ class PPO_agent(object):
 
 
 # Hyperparameters
-ITERATIONS = 750
+ITERATIONS = 2000
 windows = 50
 
-#env = gym.make("LunarLander-v2")
-env = gym.make("CartPole-v1")
+env = gym.make("LunarLander-v2")
+#env = gym.make("CartPole-v1")
 '''env.observation_space.shape'''
 print(env.action_space)
 print(env.observation_space, env.observation_space.shape)
@@ -155,15 +156,16 @@ for i in range(ITERATIONS):
         avg_reward.append(avg)
         if avg > best_avg_reward:
             best_avg_reward = avg
-            #agent.q_network.save("dqn_cartpole.h5")
+            agent.actor.save("ppo_policy.h5")
+            agent.critic.save("ppo_critic.h5")
     else: 
-        avg_reward.append(8)
+        avg_reward.append(-300)
     
     print("\rEpisode {}/{} || Best average reward {}, Current Iteration Reward {}".format(i, ITERATIONS, best_avg_reward, total_reward) , end='', flush=True)
 
 #np.save("rewards", np.asarray(rewards))
 #np.save("averages", np.asarray(avg_reward))
-plt.ylim(0,200)
+plt.ylim(-350,200)
 plt.plot(rewards, color='olive', label='Reward')
 plt.plot(avg_reward, color='red', label='Average')
 plt.legend()
