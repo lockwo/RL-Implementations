@@ -1,6 +1,6 @@
 # RL-Implementation
 
-This repository contains from scratch implementations of prominent reinforcement learning techniques using using tensorflow 2, Open AI Gym and potentially other environmemts. I provide the PDFs of all papers in the associated folder. I usually just test the algorithms on simple environments (i.e. not atari) due to my limited access to computational power, however, I sometimes uplaod CNN versions and I may upload atari versions in the future. 
+This repository contains from scratch implementations of prominent reinforcement learning techniques using using tensorflow 2, Open AI Gym and potentially other environmemts. I provide the PDFs of all papers in the associated folder. I usually just test the algorithms on simple environments (i.e. not atari) due to my limited access to computational power, however, I sometimes uplaod CNN versions and I may upload atari versions in the future. Note that all implementations that can be both discrete and continuous (e.g. A2C) are discrete unless otherwise mentioned)
 
 This repository is meant to be an educational resource. I find that just reading papers can be hard to fully understand and implementing algorithms in code greatly helps my understanding. This repo is meant to feature the simplest possible implementations of prominent RL algorithms that are easy to understand. 
 
