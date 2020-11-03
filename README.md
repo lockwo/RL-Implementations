@@ -27,7 +27,7 @@ Each algorithm will have its own folder. The environments folder contains any en
 
 ### Actor-Critic Methods
 
-- [ ] Deep Deterministic Policy Gradient (DDPG)
+- [X] Deep Deterministic Policy Gradient (DDPG)
 - [ ] Twin Delayed Deep Deterministic Policy Gradients (TD3)
 - [X] Advantage Actor Critic (A2C)
 - [ ] Actor Critic with Experience Replay (ACER)
