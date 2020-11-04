@@ -28,7 +28,7 @@ Each algorithm will have its own folder. The environments folder contains any en
 ### Actor-Critic Methods
 
 - [X] Deep Deterministic Policy Gradient (DDPG)
-- [ ] Twin Delayed Deep Deterministic Policy Gradients (TD3)
+- [X] Twin Delayed Deep Deterministic Policy Gradients (TD3)
 - [X] Advantage Actor Critic (A2C)
 - [ ] Actor Critic with Experience Replay (ACER)
 - [ ] Actor Critic using Kronecker-Factored Trust Region (ACKTR)
@@ -96,6 +96,10 @@ This is the straight forward Monte Carlo Policy Gradient Method. Fixed the bug u
 ## Deep Deterministic Policy Gradient (DDPG):
 
 Sometimes called the Q learning of continuous action spaces, DDPG is an older algorithm (in the scope of deep RL) that has seen many modifications and improvements over the years. The original DDPG is very finicky and this algorithm (although far from the most complicated) has taken me the longest to implement. DDPG is very senstitive to a number of hyperparameters and can be very slow to train. However, the concept is very simple. You have a critic that learns the Q values for a state action pair and a actor that determines the best actions. This actor outputs in a deterministic manner (i.e. a single number, no Gaussian/standard deviations). Because we want to maximize the reward for the actor we simply take the negative gradients for the critic. This is intuitive because the critic is trying to minimize the bellman equation but we want to maximize it (by achieving better rewards). 
+
+## Twin Delayed Deep Deterministic Policy Gradient (TD3)
+
+TD3 is very similar to DDPG and is very straightforward to implement after DDPG. There are 3 main advancements (and another notable difference) between TD3 and DDPG. TD3 improvements are that it has 2 Q predicting networks that it uses to reduce variance and decrease bellman overestimations, it updates the policy network less frequently than the Q networks and it adds noise to the target policy predictions to smooth it. The notable change is that it uses normal Guassian noise as opposed to the Ornstein–Uhlenbeck process. DDPG was extremely hyperparameter sensitive and brittle (even for deep RL) and TD3 makes some pretty simple adjustments to greatly improve the algorithm. 
 
 ## Advantage Actor Critic (A2C):
 
