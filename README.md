@@ -6,7 +6,7 @@ This repository is meant to be an educational resource. I find that just reading
 
 # Repo organization
 
-Each algorithm will have its own folder. The environments folder contains any environments that I have made from scratch. I will only upload easily trainable models or contemporary models. I do run all programs and train them briefly, to verify they are (mostly) correct.
+Each algorithm will have its own folder. The environments folder contains any environments that I have made from scratch. I will only upload easily trainable models or contemporary models. I do run all programs and train them briefly, to verify they are (mostly) correct. Each folder will have a graph of the algorithm performance. 
 
 # Algorithms
 
