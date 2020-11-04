@@ -7,7 +7,7 @@ import tensorflow as tf
 from collections import deque
 
 #tf.compat.v1.disable_eager_execution()
-tf.keras.backend.set_floatx('float64')
+#tf.keras.backend.set_floatx('float64')
 class DDPG_AGENT(object):
     def __init__(self, action_size, state_size, batch_size):
         self.action_space = action_size
@@ -21,6 +21,7 @@ class DDPG_AGENT(object):
         self.q2_target = self.make_critic()
         self.policy = self.make_actor()
         self.policy_target = self.make_actor()
+        self.policy_counter = 0
         self.move_weights()
         self.buff = 50000
         self.states = np.zeros((self.buff, self.state_space[0]))
@@ -105,7 +106,7 @@ class DDPG_AGENT(object):
         self.update_target(self.q1_target.trainable_variables, self.q1.trainable_variables)
         self.update_target(self.q2_target.trainable_variables, self.q2.trainable_variables)
 
-        if self.counter % self.policy_delay == 0:
+        if self.policy_counter % self.policy_delay == 0:
             with tf.GradientTape() as tape:
                 actions = self.policy(state_batch, training=True)
                 critic = tf.math.minimum(self.q1([state_batch, actions], training=True), self.q2([state_batch, actions], training=True))
@@ -117,6 +118,7 @@ class DDPG_AGENT(object):
 
             self.update_target(self.policy_target.trainable_variables, self.policy.trainable_variables)
        
+        self.policy_counter += 1
     
     @tf.function
     def update_target(self, target_weights, weights):
@@ -175,6 +177,7 @@ for i in range(ITERATIONS):
 plt.plot(rewards, color='olive', label='Reward')
 plt.plot(avg_reward, color='red', label='Average')
 plt.legend()
+plt.title("TD3 On Pendulum")
 plt.ylabel('Reward')
 plt.xlabel('Generation')
 plt.show()
