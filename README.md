@@ -1,8 +1,8 @@
 # RL-Implementation
 
-This repository contains from scratch implementations of prominent reinforcement learning techniques using using tensorflow 2, Open AI Gym and potentially other environmemts. I provide the PDFs of all papers in the associated folder. I usually just test the algorithms on simple environments (i.e. not atari) due to my limited access to computational power, however, I sometimes uplaod CNN versions and I may upload atari versions in the future. Note that all implementations that can be both discrete and continuous (e.g. A2C) are discrete unless otherwise mentioned)
+This repository contains from scratch implementations of prominent reinforcement learning techniques using using tensorflow 2, Open AI Gym and potentially other environmemts. I provide the PDFs of all papers in the associated folder. I usually just test the algorithms on simple environments (i.e. not atari) due to my limited access to computational power, however, I sometimes uplaod CNN versions and I may upload atari versions in the future. Note that all implementations that can be both discrete and continuous (e.g. A2C) are discrete unless otherwise mentioned).
 
-This repository is meant to be an educational resource. I find that just reading papers can be hard to fully understand and implementing algorithms in code greatly helps my understanding. This repo is meant to feature the simplest possible implementations of prominent RL algorithms that are easy to understand. 
+My goal is to make the simplest and most concise possible implementations. I am aware that many of my algorithms utilize inefficient TF code (such as fit instead of gradient tape) and I am working to update them. 
 
 # Repo organization
 
@@ -19,6 +19,7 @@ Each algorithm will have its own folder. The environments folder contains any en
 - [X] Double DQN
 - [X] Dueling DQN
 - [X] Boostrapped DQN
+- [X] Soft Q Learning
 - [ ] Full DQN (n-Step Bootstrapped Double Dueling DQN with Prioritized Experience Replay)
 
 ### Policy Methods
@@ -88,6 +89,14 @@ Double DQN is very similar to DQN. The difference is that double dqn has two neu
 ## Dueling DQN:
 
 Another improvement on the vanilla DQN, this relies on the understanding of exactly what a Q value is. A Q value represents the value of that state in addition to the future potential value. These can be separated into their own neural network layers before being recombined. This is done so the network can learn to predict the value and action calculations independently to improve each. This is a very intuitive improvement and adds very little in terms of lines of code. 
+
+## Bootstrapped DQN
+
+This is a very simple algorithm. It simply offers a number of Q prediction heads of the neural network in order to aid with exploration. Each iteration a different head is choiced and the action is picked greedily. 
+
+## Soft Q Learning
+
+Energy based techniques rely on the simple modification of the bellman equation to include entropy. This entropy can encourage multimodal distributions in action functions enabling better exploration and better domain independence. It is usually written for continuous action spaces, but mine is discrete. 
 
 ## REINFORCE:
 
