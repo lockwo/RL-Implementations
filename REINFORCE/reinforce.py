@@ -22,7 +22,7 @@ class REINFORCE_agent(object):
     def make_net(self):
         x = tf.keras.layers.Input(shape=([self.state_space,]))
         y = tf.keras.layers.Dense(64, activation='relu')(x)
-        y = tf.keras.layers.Dense(128, activation='relu')(y)
+        #y = tf.keras.layers.Dense(128, activation='relu')(y)
         y = tf.keras.layers.Dense(64, activation='relu')(y)
         y = tf.keras.layers.Dense(self.action_space, activation='softmax')(y)
         model = tf.keras.models.Model(inputs=x, outputs=y)
@@ -77,10 +77,10 @@ class REINFORCE_agent(object):
 
 
 # Hyperparameters
-ITERATIONS = 1000
-windows = 50
+ITERATIONS = 500
+windows = 10
 
-env = gym.make("LunarLander-v2")
+env = gym.make("CartPole-v1")
 #env.observation_space.shape
 print(env.action_space)
 print(env.observation_space, env.observation_space.shape[0])
@@ -114,14 +114,14 @@ for i in range(ITERATIONS):
             best_avg_reward = avg
             #agent.policy_net.save("reinforce_cartpole.h5")
     else: 
-        avg_reward.append(-300)
+        avg_reward.append(0)
     
     print("\rEpisode {}/{} || Best average reward {}, Current Iteration Reward {}".format(i, ITERATIONS, best_avg_reward, total_reward), end='', flush=True)
    
 
 #np.save("nn_rewards_1", np.asarray(rewards))
 #np.save("nn_reinforce_4_1", np.asarray(avg_reward))
-plt.ylim(-350,250)
+#plt.ylim(0,250)
 plt.plot(rewards, color='olive', label='Reward')
 plt.plot(avg_reward, color='red', label='Average')
 plt.legend()
