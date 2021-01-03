@@ -6,169 +6,158 @@ import math
 from collections import deque
 import tensorflow as tf
 
-#tf.compat.v1.disable_eager_execution()
 #tf.keras.backend.set_floatx('float64')
 
 class PPO_agent(object):
     def __init__(self, action_size, state_size):
         self.action_space = action_size
         self.state_space = state_size[0]
-        self.e = 0.2 # Policy distance
+        self.e = 0.25 # Policy distance
         self.actor, self.critic = self.make_net(state_size)
-        self.gamma = 0.98 # DISCOUNT FACTOR, CLOSE TO 1 = LONG TERM
-        self.K = 8 # Number of epochs
+        self.gamma = 0.99 # DISCOUNT FACTOR, CLOSE TO 1 = LONG TERM
+        self.K = 4 # Number of epochs
         self.T = 2048 # Horizon
         self.M = 64 # Batch size
-        self.memory = deque(maxlen=self.T)
-        self.opt = tf.keras.optimizers.Adam()
-        self.temp = []
-        self.rewards = []
+        self.ent = 0.01
+        self.states = np.zeros((self.T, self.state_space))
+        self.rewards = np.zeros((self.T, 1))
+        self.actions = np.zeros((self.T, 1))
+        self.log_probs = np.zeros((self.T, self.action_space))
+        self.iter = 0
+        self.policy_opt = tf.keras.optimizers.Adam(lr=3e-4)
+        self.critic_opt = tf.keras.optimizers.Adam(lr=1e-3)
 
-    def ppo_loss(self, ytrue, ypred):
-        #action = ytrue[:2]
-        #log_prob = ytrue[2:]
-        # FIX FOR UNEVEN
-        action, log_prob = tf.split(ytrue, num_or_size_splits=2, axis=1)
-        ratio = tf.math.exp(tf.math.log(ypred) - log_prob)
+    def entropy(self, probs):
+        return tf.reduce_mean(-probs * tf.math.log(probs))
+
+    def ppo_loss(self, cur_pol, old_pol, advantages):
+        #print(tf.math.log(cur_pol), old_pol, advantages)
+        ratio = tf.math.exp(tf.math.log(cur_pol) - old_pol)
         ratio = tf.clip_by_value(ratio, 1e-10, 10-1e-10)
+        #print(ratio)
         clipped = tf.clip_by_value(ratio, 1-self.e, 1+self.e)
-        loss = -tf.reduce_mean(tf.math.minimum(tf.multiply(ratio, action), tf.multiply(clipped,action)))
+        #print(clipped * advantages, ratio*advantages)
+        loss = -tf.reduce_mean(tf.math.minimum(ratio * advantages, clipped * advantages)) + self.ent * self.entropy(cur_pol)
         #print(loss)
+        #input()
         return loss
 
     def make_net(self, state):
         inputs = tf.keras.layers.Input(shape=(state))
-        value = tf.keras.layers.Dense(64, activation='relu', name='dense1')(inputs)
-        value = tf.keras.layers.Dense(128, activation='relu', name='dense2')(value)
-        value = tf.keras.layers.Dense(64, activation='relu', name='value1')(value)
-        value = tf.keras.layers.Dense(1, name='v_out')(value)
-        policy = tf.keras.layers.Dense(64, activation='relu', name='dense1')(inputs)
-        policy = tf.keras.layers.Dense(128, activation='relu', name='dense2')(policy) 
-        policy = tf.keras.layers.Dense(64, activation='relu', name='policy1')(policy)
-        policy = tf.keras.layers.Dense(self.action_space, activation='softmax', name='policy_out')(policy)
+        last_init = tf.random_uniform_initializer(minval=-0.001, maxval=0.001)
+        value = tf.keras.layers.Dense(16, activation='relu')(inputs)
+        value = tf.keras.layers.Dense(128, activation='relu')(value)
+        value = tf.keras.layers.Dense(16, activation='relu')(value)
+        value = tf.keras.layers.Dense(1)(value)
+        policy = tf.keras.layers.Dense(32, activation='relu')(inputs)
+        policy = tf.keras.layers.Dense(64, activation='relu')(policy) 
+        policy = tf.keras.layers.Dense(32, activation='relu')(policy)
+        policy = tf.keras.layers.Dense(self.action_space, activation='softmax', kernel_initializer=last_init)(policy)
         v_model = tf.keras.models.Model(inputs=inputs, outputs=value)
         p_model = tf.keras.models.Model(inputs=inputs, outputs=policy)
         v_model.summary()
         p_model.summary()
-        v_model.compile(optimizer=tf.keras.optimizers.Adam(), loss='mse')
-        p_model.compile(optimizer=tf.keras.optimizers.Adam(), loss=self.ppo_loss)
         return p_model, v_model
 
-    def remember(self, state, action, reward, value, log_probs):
-        self.temp.append([state, action, reward, value, tf.math.log(log_probs)])
-        self.rewards.append(reward)
+    def remember(self, state, reward, action, probs):
+        i = self.iter
+        self.states[i] = state
+        self.rewards[i] = reward
+        self.actions[i] = action
+        self.log_probs[i] = tf.math.log(probs)
+        self.iter += 1
 
     def get_action(self, obs):
-        temp = self.actor.predict(np.array([obs,]))
-        probs = temp[0]
+        probs = self.actor(np.array([obs])).numpy()[0]
         action = np.random.choice(self.action_space, p=probs)
-        temp = self.critic.predict(np.array([obs,]))
-        value = temp[0]
-        return action, value, probs
+        # print(action, value, probs)
+        return action, probs
 
     def discount_reward(self, rewards):
         d_rewards = np.zeros_like(rewards)
         Gt = 0
         # Discount rewards
         for i in reversed(range(len(rewards))):
-            done = 1
             if i == len(rewards) - 1:
-                done = 0
                 Gt = 0
             else:
-                Gt = rewards[i] + self.gamma * self.temp[i+1][3]
-                #Gt = done * Gt * self.gamma + rewards[i]
+                Gt = rewards[i] + self.gamma * Gt
             d_rewards[i] = Gt
 
         return d_rewards
 
     def train(self):
-        state = np.zeros(shape=(self.M, self.state_space))
-        action = np.zeros(shape=(self.M, self.action_space))
-        rws = np.zeros(shape=(self.M))
+        state_batch = tf.convert_to_tensor(self.states[:self.iter])
+        log_batch = tf.convert_to_tensor(self.log_probs[:self.iter])
+        action_batch = tf.convert_to_tensor(self.actions[:self.iter])
+        action_batch = [[i, action_batch[i][0]] for i in range(len(action_batch))]
+        log_batch = tf.cast(log_batch, dtype=tf.float32)
+        action_batch = tf.cast(action_batch, dtype=tf.int32)
 
-        rewards = self.discount_reward(self.rewards)
-        for counter, v in enumerate(rewards):
-            self.memory.append((self.temp[counter][0], self.temp[counter][1], v, self.temp[counter][3], self.temp[counter][4]))
-        if len(self.memory) < self.M:
-            self.temp.clear()
-            self.rewards.clear()
-            return
-        minibatch = random.sample(self.memory, self.M)
-        i = 0
-        f = np.zeros(shape=(self.M, 2*self.action_space))
-        #f = np.zeros(shape=(self.M, 2, 2))
-        for s, a, r, v, log_prob in minibatch:
-            state[i] = s
-            #print(s, r, v, a)
-            rws[i] = r
-            action[i][a] = r - v[0]
-            f[i][:self.action_space] = action[i]
-            f[i][self.action_space:] = log_prob
-            #f[i][0] = action[i]
-            #f[i][2]
-            i += 1
-        #print(state, f)
-        #print(state.shape, f.shape)
-        #f = tf.convert_to_tensor(f)
-        self.actor.fit(state, f, epochs=self.K, verbose=0)
-        self.critic.fit(state, rws, epochs=self.K, verbose=0)
-        self.temp.clear()
-        self.rewards.clear()
+        rewards = self.discount_reward(self.rewards[:self.iter])
 
+        for _ in range(self.K):
+            with tf.GradientTape() as value_tape, tf.GradientTape() as policy_tape:
+                value_pred = self.critic(state_batch, training=True)
+                critic_loss = tf.math.reduce_mean(tf.math.square(value_pred - rewards))
+                advantages = rewards - value_pred
+                advantages = (advantages - np.mean(advantages)) / (np.std(advantages) + 1e-8)
+                policy_pred = self.actor(state_batch, training=True)
+                policy_loss = self.ppo_loss(tf.gather_nd(policy_pred, action_batch), tf.gather_nd(log_batch, action_batch), tf.squeeze(advantages))
+            
+            critic_grads = value_tape.gradient(critic_loss, self.critic.trainable_variables)
+            self.critic_opt.apply_gradients(zip(critic_grads, self.critic.trainable_variables))
+            policy_grads = policy_tape.gradient(policy_loss, self.actor.trainable_variables)
+            self.policy_opt.apply_gradients(zip(policy_grads, self.actor.trainable_variables))
 
+        self.iter = 0
 
-# Hyperparameters
-ITERATIONS = 2000
-windows = 50
+if __name__ == '__main__':
+    ITERATIONS = 300
+    windows = 20
 
-env = gym.make("LunarLander-v2")
-#env = gym.make("CartPole-v1")
-'''env.observation_space.shape'''
-print(env.action_space)
-print(env.observation_space, env.observation_space.shape)
-agent = PPO_agent(env.action_space.n, env.observation_space.shape)
-rewards = []
-# Uncomment the line before to load model
-#agent.q_network = tf.keras.models.load_model("cartpole.h5")
-avg_reward = deque(maxlen=ITERATIONS)
-best_avg_reward = -math.inf
-rs = deque(maxlen=windows)
+    #env = gym.make("LunarLander-v2")
+    env = gym.make("CartPole-v1")
+    '''env.observation_space.shape'''
+    print(env.action_space)
+    print(env.observation_space, env.observation_space.shape)
+    agent = PPO_agent(env.action_space.n, env.observation_space.shape)
+    rewards = []
+    # Uncomment the line before to load model
+    #agent.q_network = tf.keras.models.load_model("cartpole.h5")
+    avg_reward = deque(maxlen=ITERATIONS)
+    best_avg_reward = -math.inf
+    rs = deque(maxlen=windows)
 
-for i in range(ITERATIONS):
-    s1 = env.reset()
-    total_reward = 0
-    done = False
-    while not done:
-        #env.render()
-        action, value, lp = agent.get_action(s1)
-        s2, reward, done, info = env.step(action)
-        total_reward += reward
-        agent.remember(s1, action, reward, value, lp)
-        if done:
-            agent.train()
-            rewards.append(total_reward)
-            rs.append(total_reward)
-        else:
+    for i in range(ITERATIONS):
+        s1 = env.reset()
+        total_reward = 0
+        done = False
+        while not done:
+            #env.render()
+            action, p = agent.get_action(s1)
+            s2, reward, done, info = env.step(action)
+            total_reward += reward
+            agent.remember(s1, reward, action, p)
             s1 = s2
-    if i >= windows:
+        agent.train()
+        rewards.append(total_reward)
+        rs.append(total_reward)
         avg = np.mean(rs)
         avg_reward.append(avg)
-        if avg > best_avg_reward:
-            best_avg_reward = avg
-            agent.actor.save("ppo_policy.h5")
-            agent.critic.save("ppo_critic.h5")
-    else: 
-        avg_reward.append(-300)
-    
-    print("\rEpisode {}/{} || Best average reward {}, Current Iteration Reward {}".format(i, ITERATIONS, best_avg_reward, total_reward) , end='', flush=True)
+        if i >= windows:
+            if avg > best_avg_reward:
+                best_avg_reward = avg
+        
+        print("\rEpisode {}/{} || Best average reward {}, Current Average {}, Current Iteration Reward {}".format(i, ITERATIONS, best_avg_reward, avg, total_reward), end='', flush=True)
+        i += 1
 
-#np.save("rewards", np.asarray(rewards))
-#np.save("averages", np.asarray(avg_reward))
-plt.ylim(-350,200)
-plt.plot(rewards, color='olive', label='Reward')
-plt.plot(avg_reward, color='red', label='Average')
-plt.legend()
-plt.ylabel('Reward')
-plt.xlabel('Generation')
-plt.show()
+    #np.save("rewards", np.asarray(rewards))
+    #np.save("averages", np.asarray(avg_reward))
+    #plt.ylim(-350,200)
+    plt.plot(rewards, label='Reward')
+    plt.plot(avg_reward, label='Average')
+    plt.legend()
+    plt.ylabel('Reward')
+    plt.xlabel('Iteration')
+    plt.show()
