@@ -36,7 +36,6 @@ class DDPG_AGENT(object):
         self.x_prev = np.zeros_like(self.mean)
 
     def noise(self):
-        # from https://keras.io/examples/rl/ddpg_pendulum/
         x = (
             self.x_prev
             + self.theta * (self.mean - self.x_prev) * self.dt
