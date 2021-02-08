@@ -111,6 +111,10 @@ Sometimes called the Q learning of continuous action spaces, DDPG is an older al
 
 TD3 is very similar to DDPG and is very straightforward to implement after DDPG. There are 3 main advancements (and another notable difference) between TD3 and DDPG. TD3 improvements are that it has 2 Q predicting networks that it uses to reduce variance and decrease bellman overestimations, it updates the policy network less frequently than the Q networks and it adds noise to the target policy predictions to smooth it. The notable change is that it uses normal Guassian noise as opposed to the Ornstein–Uhlenbeck process. DDPG was extremely hyperparameter sensitive and brittle (even for deep RL) and TD3 makes some pretty simple adjustments to greatly improve the algorithm. 
 
+## Softmax Deep Double Deterministic Policy Gradients (SD3)
+
+SD3 is essentially very similar to TD3. The main difference (other than slight structure/hyperparameter differences) is the usage of the softmax operator. The Q function is estimated via a continuous approximation of the softmax operator in order to reduce the underestimation of TD3 (while preventing the over estimation of DDPG). Although it generally performs well, it is slightly more computationally expensive. We have a paper submitted to ReScience on it, so if that get's accepted I will update this. 
+
 ## Advantage Actor Critic (A2C):
 
 This algorithm is very similar to the REINFORCE algorithm. The policy network in REINFORCE is updated via <img src="https://github.com/lockwo/RL-Implementation/blob/master/equations/reinforce.PNG" width="200" height="50">, but this discounted reward is replaced in A2C with an estimate of the advantage, <img src="https://github.com/lockwo/RL-Implementation/blob/master/equations/a2c.PNG" width="200" height="50">. Remember from dueling networks that Q(s,a) = V(s) + A(s,a). Thus A(s,a) = Q(s,a) - V(s). This means that a single network can predict V(s) and the advtange can be dervied from this. Thus the policy and value are different heads of the same network. Although there are asynchronous versions of this, they offer few improvements, thus I implement it synchronously.
