@@ -30,6 +30,7 @@ Each algorithm will have its own folder. The environments folder contains any en
 
 - [X] Deep Deterministic Policy Gradient (DDPG)
 - [X] Twin Delayed Deep Deterministic Policy Gradients (TD3)
+- [X] Softmax Deep Double Deterministic Policy Gradients (SD3)
 - [X] Advantage Actor Critic (A2C)
 - [ ] Actor Critic with Experience Replay (ACER)
 - [ ] Actor Critic using Kronecker-Factored Trust Region (ACKTR)
