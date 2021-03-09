@@ -1,45 +1,41 @@
 import gym
+import pybulletgym
 import numpy as np
-import random
 import matplotlib.pyplot as plt
 import math
 from collections import deque
 import tensorflow as tf
 
-#tf.keras.backend.set_floatx('float64')
+tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
 
 class PPO_agent(object):
     def __init__(self, action_size, state_size):
-        self.action_space = action_size
+        self.action_space = action_size[0]
         self.state_space = state_size[0]
         self.e = 0.25 # Policy distance
         self.actor, self.critic = self.make_net(state_size)
-        self.gamma = 0.99 # DISCOUNT FACTOR, CLOSE TO 1 = LONG TERM
+        self.gamma = 0.99 # Discount Factor
+        self.T = 1000 # Env Length
         self.K = 4 # Number of epochs
-        self.T = 2048 # Horizon
-        self.M = 64 # Batch size
-        self.ent = 0.01
+        self.ent = 0.02
         self.states = np.zeros((self.T, self.state_space))
+        self.next_states = np.zeros((self.T, self.state_space))
         self.rewards = np.zeros((self.T, 1))
         self.actions = np.zeros((self.T, 1))
         self.log_probs = np.zeros((self.T, self.action_space))
+        self.dones = np.zeros((self.T, 1))
         self.iter = 0
         self.policy_opt = tf.keras.optimizers.Adam(lr=3e-4)
-        self.critic_opt = tf.keras.optimizers.Adam(lr=1e-3)
+        self.critic_opt = tf.keras.optimizers.Adam(lr=1e-4)
 
     def entropy(self, probs):
         return tf.reduce_mean(-probs * tf.math.log(probs))
 
     def ppo_loss(self, cur_pol, old_pol, advantages):
-        #print(tf.math.log(cur_pol), old_pol, advantages)
         ratio = tf.math.exp(tf.math.log(cur_pol) - old_pol)
         ratio = tf.clip_by_value(ratio, 1e-10, 10-1e-10)
-        #print(ratio)
         clipped = tf.clip_by_value(ratio, 1-self.e, 1+self.e)
-        #print(clipped * advantages, ratio*advantages)
         loss = -tf.reduce_mean(tf.math.minimum(ratio * advantages, clipped * advantages)) + self.ent * self.entropy(cur_pol)
-        #print(loss)
-        #input()
         return loss
 
     def make_net(self, state):
@@ -59,12 +55,14 @@ class PPO_agent(object):
         p_model.summary()
         return p_model, v_model
 
-    def remember(self, state, reward, action, probs):
+    def remember(self, state, reward, action, next_state, done, probs):
         i = self.iter
         self.states[i] = state
         self.rewards[i] = reward
         self.actions[i] = action
+        self.next_states[i] = next_state
         self.log_probs[i] = tf.math.log(probs)
+        self.dones[i] = int(done)
         self.iter += 1
 
     def get_action(self, obs):
@@ -91,37 +89,54 @@ class PPO_agent(object):
         log_batch = tf.convert_to_tensor(self.log_probs[:self.iter])
         action_batch = tf.convert_to_tensor(self.actions[:self.iter])
         action_batch = [[i, action_batch[i][0]] for i in range(len(action_batch))]
+
+        dones_batch = tf.convert_to_tensor(self.dones[:self.iter])
+        next_state_batch = tf.convert_to_tensor(self.next_states[:self.iter])
+        dones_batch = tf.cast(dones_batch, dtype=tf.float32)
+        rewards_batch = tf.convert_to_tensor(self.rewards[:self.iter])
+        rewards_batch = tf.cast(rewards_batch, dtype=tf.float32)
+
+
         log_batch = tf.cast(log_batch, dtype=tf.float32)
         action_batch = tf.cast(action_batch, dtype=tf.int32)
 
         rewards = self.discount_reward(self.rewards[:self.iter])
 
         for _ in range(self.K):
-            with tf.GradientTape() as value_tape, tf.GradientTape() as policy_tape:
-                value_pred = self.critic(state_batch, training=True)
-                critic_loss = tf.math.reduce_mean(tf.math.square(value_pred - rewards))
-                advantages = rewards - value_pred
+            with tf.GradientTape() as value_tape:
+                value_pred = self.critic(next_state_batch, training=True)
+                y = rewards_batch + (1 - dones_batch) * self.gamma * value_pred
+                vs = self.critic(state_batch, training=True)
+                pred = tf.gather_nd(vs, action_batch)
+                pred = tf.reshape(pred, [self.iter, 1])
+                msbe = tf.math.reduce_mean(tf.math.square(y - pred))
+                                    
+            critic_grads = value_tape.gradient(msbe, self.critic.trainable_variables)
+            self.critic_opt.apply_gradients(zip(critic_grads, self.critic.trainable_variables))
+
+            with tf.GradientTape() as policy_tape:
+                advantages = rewards - self.critic(state_batch)
                 advantages = (advantages - np.mean(advantages)) / (np.std(advantages) + 1e-8)
                 policy_pred = self.actor(state_batch, training=True)
                 policy_loss = self.ppo_loss(tf.gather_nd(policy_pred, action_batch), tf.gather_nd(log_batch, action_batch), tf.squeeze(advantages))
-            
-            critic_grads = value_tape.gradient(critic_loss, self.critic.trainable_variables)
-            self.critic_opt.apply_gradients(zip(critic_grads, self.critic.trainable_variables))
+
             policy_grads = policy_tape.gradient(policy_loss, self.actor.trainable_variables)
             self.policy_opt.apply_gradients(zip(policy_grads, self.actor.trainable_variables))
 
         self.iter = 0
 
 if __name__ == '__main__':
-    ITERATIONS = 300
+    ITERATIONS = 350
     windows = 20
 
     #env = gym.make("LunarLander-v2")
+    #env = gym.make("AntMuJoCoEnv-v0")
     env = gym.make("CartPole-v1")
     '''env.observation_space.shape'''
     print(env.action_space)
     print(env.observation_space, env.observation_space.shape)
-    agent = PPO_agent(env.action_space.n, env.observation_space.shape)
+    #agent = PPO_agent(env.action_space.shape, env.observation_space.shape)
+    agent = PPO_agent([2], env.observation_space.shape)
     rewards = []
     # Uncomment the line before to load model
     #agent.q_network = tf.keras.models.load_model("cartpole.h5")
@@ -138,16 +153,15 @@ if __name__ == '__main__':
             action, p = agent.get_action(s1)
             s2, reward, done, info = env.step(action)
             total_reward += reward
-            agent.remember(s1, reward, action, p)
+            agent.remember(s1, reward, action, s2, done, p)
             s1 = s2
         agent.train()
         rewards.append(total_reward)
         rs.append(total_reward)
         avg = np.mean(rs)
         avg_reward.append(avg)
-        if i >= windows:
-            if avg > best_avg_reward:
-                best_avg_reward = avg
+        if avg > best_avg_reward:
+            best_avg_reward = avg
         
         print("\rEpisode {}/{} || Best average reward {}, Current Average {}, Current Iteration Reward {}".format(i, ITERATIONS, best_avg_reward, avg, total_reward), end='', flush=True)
         i += 1
