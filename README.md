@@ -36,7 +36,7 @@ Each algorithm will have its own folder. The environments folder contains any en
 - [ ] Actor Critic using Kronecker-Factored Trust Region (ACKTR)
 - [ ] Trust Region Policy Optimization (TRPO)
 - [X] Proximal Policy Optimization (PPO)
-- [ ] Soft Actor Critic (SAC)
+- [X] Soft Actor Critic (SAC)
 
 ## Model-Based Algorithms
 
