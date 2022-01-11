@@ -1,8 +1,10 @@
 # RL-Implementation
 
-This repository contains from scratch implementations of prominent reinforcement learning techniques using using Tensorflow 2, Open AI Gym and potentially other environmemts. Each algorithm will be paired with a video explanation. Although I will do my best to test and debug these codes, I will likely do little hyperparameter opimtizaiton (something that is sometimes critical for DRL). Think of these are being primarily education and potentially a good place to jump off from for research projects (since they will focus on efficient/minimize lines of code and will be contained in single files).
+This repository contains from scratch implementations of prominent reinforcement learning techniques using using Tensorflow 2, Open AI Gym and potentially other environmemts. Each algorithm will be paired with a video explanation. Although I will do my best to test and debug these codes, I will likely do little hyperparameter optimization (something that is sometimes critical for DRL). Think of these are being primarily educational and potentially a good place to jump off from for research projects (since they will focus on efficient/minimize lines of code and will be contained in single files).
 
-For a slightly more thorough explanation see the [previous readme](https://github.com/lockwo/RL-Implementations/blob/master/old_readme.md)
+For a slightly more thorough explanation see the [previous readme](https://github.com/lockwo/RL-Implementations/blob/master/old_readme.md).
+
+- Q Learning [video link]()
 
 
 # Reinforcement Learning for the World
